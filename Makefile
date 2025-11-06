@@ -3,9 +3,10 @@ CFLAGS = -Wall -Werror -Wextra -std=gnu11
 CHECK_CFLAGS = -I/usr/local/Cellar/check/0.15.2/include
 CHECK_LDFLAGS = -L/usr/local/Cellar/check/0.15.2/lib
 TEST_FLAGS = -lcheck -lm -lpthread
+GCOV_FLAGS = -fprofile-arcs -ftest-coverage
 
 #SRC_FILE = $(filter-out  test_%.c, $(wildcard *.c))
-SRC_FILE = s21_strlen.c
+SRC_FILE = s21_strlen.c s21_strchr.c
 OBJ_FILE = $(SRC_FILE:.c=.o)
 
 .PHONY: all clean rebulid test
@@ -20,7 +21,7 @@ s21_string.a: $(OBJ_FILE)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 test: s21_string.a
-	$(CC) $(CFLAGS) $(CHECK_CFLAGS) s21_string_test.c s21_string.a $(CHECK_LDFLAGS) $(TEST_FLAGS) -o test_exec
+	$(CC) $(CFLAGS) $(CHECK_CFLAGS) $(GCOV_FLAGS) s21_string_test.c s21_string.a $(CHECK_LDFLAGS) $(TEST_FLAGS) -o test_exec
 	./test_exec
 
 clean:

@@ -6,4 +6,5 @@ typedef unsigned long s21_size_t;
 
 /*---Part1---*/
 s21_size_t s21_strlen(const char *str);
+char *s21_strchr(const char *str, int c);
 #endif

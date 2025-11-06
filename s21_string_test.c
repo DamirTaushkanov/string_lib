@@ -20,11 +20,21 @@ START_TEST (test_strlen) {
 }
 END_TEST
 
+START_TEST (test_strchr) {
+    ck_assert_ptr_eq(s21_strchr(test1, 'l'), strchr(test1, 'l'));
+    ck_assert_ptr_eq(s21_strchr(test1, '2'), strchr(test1, '2'));
+    ck_assert_ptr_eq(s21_strchr(test2, '\0'), strchr(test2, '\0'));
+    ck_assert_ptr_eq(s21_strchr(test3, '\n'), strchr(test3, '\n'));
+    ck_assert_ptr_eq(s21_strchr(test5, 'c'), strchr(test5, 'c'));
+}
+END_TEST
+
 int main() {
     Suite *s = suite_create("String test");
     TCase *tc = tcase_create("String test");
 
     tcase_add_test(tc, test_strlen);
+    tcase_add_test(tc, test_strchr);
 
     suite_add_tcase(s, tc);
 
