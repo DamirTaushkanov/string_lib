@@ -1,11 +1,14 @@
 #include "s21_string.h"
 
 char *s21_strchr(const char *str, int c) {
-    while (1) {
-        if (*str != (char)c) {
-            str++;
-        }else{return (char *)str;}
-        if (*str == '\0'){break;}
-    }
+  if (str == S21_NULL)
     return S21_NULL;
+
+  do {
+    if (*str == (char)c) {
+      return (char *)str;
+    }
+  } while (*str++ != '\0');
+
+  return S21_NULL;
 }
