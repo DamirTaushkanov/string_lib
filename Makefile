@@ -8,7 +8,7 @@ GCOV_FLAGS = -fprofile-arcs -ftest-coverage
 LCOV_FLAGS = --capture --directory
 
 #SRC_FILE = $(filter-out  test_%.c, $(wildcard *.c))
-SRC_FILE = s21_strlen.c s21_strchr.c s21_strrchr.c s21_strncat.c
+SRC_FILE = s21_strlen.c s21_strchr.c s21_strrchr.c s21_strncat.c s21_strstr.c s21_strncmp.c
 OBJ_FILE = $(SRC_FILE:.c=.o)
 
 CLANG_FORMAT = clang-format

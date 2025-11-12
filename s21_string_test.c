@@ -274,6 +274,197 @@ START_TEST(test_strncat) {
 }
 END_TEST
 
+// Strstr test
+START_TEST(test_strstr) {
+  // Base test
+  {
+    ck_assert_str_eq(s21_strstr("Hello World", "World"),
+                   strstr("Hello World", "World"));
+    ck_assert_str_eq(s21_strstr("Hello World", "Hello"),
+                   strstr("Hello World", "Hello"));
+    ck_assert_str_eq(s21_strstr("Hello World", "lo"),
+                   strstr("Hello World", "lo"));
+    ck_assert_str_eq(s21_strstr("Hello World", "o W"),
+                   strstr("Hello World", "o W"));
+  }
+
+  // There isn't
+  {
+    ck_assert_ptr_eq(s21_strstr("Hello World", "XYZ"),
+                   strstr("Hello World", "XYZ"));
+    ck_assert_ptr_eq(s21_strstr("Hello World", "world"),
+                   strstr("Hello World", "world"));
+    ck_assert_ptr_eq(s21_strstr("Hello", "Hello World"),
+                   strstr("Hello", "Hello World"));
+  }
+
+  // Needle is empty
+  {
+    ck_assert_ptr_eq(s21_strstr("Hello World", ""), strstr("Hello World", ""));
+    ck_assert_ptr_eq(s21_strstr("", ""), strstr("", ""));
+  }
+
+  // Haystack is empty 
+  {
+    ck_assert_ptr_eq(s21_strstr("", "test"), strstr("", "test"));
+    ck_assert_ptr_eq(s21_strstr("", "a"), strstr("", "a"));
+  }
+  
+  // Complete coincidence
+  {
+    ck_assert_str_eq(s21_strstr("test", "test"), strstr("test", "test"));
+    ck_assert_str_eq(s21_strstr("a", "a"), strstr("a", "a"));
+  }
+
+  // Multiple
+  {
+    ck_assert_str_eq(s21_strstr("ababab", "ab"),
+                   strstr("ababab", "ab"));
+    ck_assert_str_eq(s21_strstr("Hello Wor World", "World"),
+                   strstr("Hello Wor World", "World"));
+    ck_assert_str_eq(s21_strstr("mississippi", "iss"),
+                   strstr("mississippi", "iss"));
+  }
+
+  // Special symbol
+  {
+    ck_assert_str_eq(s21_strstr("Line1\nLine2", "Line2"),
+                   strstr("Line1\nLine2", "Line2"));
+    ck_assert_str_eq(s21_strstr("Tab\tText", "\tT"), strstr("Tab\tText", "\tT"));
+    ck_assert_str_eq(s21_strstr("Test\r\nEnd", "\r\n"),
+                   strstr("Test\r\nEnd", "\r\n"));
+  }
+
+  // Partial match
+  {
+    char *haystack = "abcabcabcd";
+    char *needle = "abcabcd";
+    ck_assert_ptr_eq(s21_strstr(haystack, needle), strstr(haystack, needle));
+  }
+
+  // One symbol
+  ck_assert_str_eq(s21_strstr("abcdef", "c"), strstr("abcdef", "c"));
+  ck_assert_str_eq(s21_strstr("abcdef", "f"), strstr("abcdef", "f"));
+  ck_assert_ptr_eq(s21_strstr("abcdef", "g"), strstr("abcdef", "g"));
+
+  // Big line
+  {
+    char long_str[] = "This is a very long string for testing purposes with "
+                      "multiple words and patterns";
+    ck_assert_str_eq(s21_strstr(long_str, "multiple"),
+                     strstr(long_str, "multiple"));
+    ck_assert_str_eq(s21_strstr(long_str, "patterns"),
+                     strstr(long_str, "patterns"));
+    ck_assert_ptr_eq(s21_strstr(long_str, "nonexistent"),
+                     strstr(long_str, "nonexistent"));
+  }
+
+  // Digits
+  {
+    ck_assert_str_eq(s21_strstr("123456789", "456"),
+                     strstr("123456789", "456"));
+    ck_assert_str_eq(s21_strstr("test123test", "123"),
+                     strstr("test123test", "123"));
+  }
+
+  // Mix
+  {
+    ck_assert_str_eq(s21_strstr("Hello123 World!@#", "World!@"),
+                     strstr("Hello123 World!@#", "World!@"));
+    ck_assert_str_eq(s21_strstr("Text with  spaces", "with  sp"),
+                     strstr("Text with  spaces", "with  sp"));
+  }
+}
+END_TEST
+
+// Strncmp test
+START_TEST(test_strncmp) {
+  // Base test
+  {
+    ck_assert_int_eq(s21_strncmp("abc", "abc", 3), strncmp("abc", "abc", 3));
+    ck_assert_int_eq(s21_strncmp("Hello", "Hello", 5),
+                     strncmp("Hello", "Hello", 5));
+    ck_assert_int_eq(s21_strncmp("", "", 1), strncmp("", "", 1));
+  }
+
+  // Different line
+  {
+    ck_assert_int_eq(s21_strncmp("abc", "abd", 3), strncmp("abc", "abd", 3));
+    ck_assert_int_eq(s21_strncmp("abd", "abc", 3), strncmp("abd", "abc", 3));
+    ck_assert_int_eq(s21_strncmp("abc", "abC", 3), strncmp("abc", "abC", 3));
+  }
+
+  // First symbol diff
+  {
+    ck_assert_int_eq(s21_strncmp("abc", "xbc", 3), strncmp("abc", "xbc", 3));
+    ck_assert_int_eq(s21_strncmp("xbc", "abc", 3), strncmp("xbc", "abc", 3));
+  }
+
+  // N limit
+  {
+    ck_assert_int_eq(s21_strncmp("abc", "abd", 2), strncmp("abc", "abd", 2));
+    ck_assert_int_eq(s21_strncmp("abcdef", "abcxyz", 3),
+                     strncmp("abcdef", "abcxyz", 3));
+    ck_assert_int_eq(s21_strncmp("Hello", "Help", 3),
+                     strncmp("Hello", "Help", 3));
+  }
+
+  // N = 0
+  {
+    ck_assert_int_eq(s21_strncmp("abc", "xyz", 0), strncmp("abc", "xyz", 0));
+    ck_assert_int_eq(s21_strncmp("anything", "different", 0),
+                     strncmp("anything", "different", 0));
+  }
+
+  // Different line len
+  {
+    ck_assert_int_eq(s21_strncmp("ab", "abc", 3), strncmp("ab", "abc", 3));
+    ck_assert_int_eq(s21_strncmp("abc", "ab", 3), strncmp("abc", "ab", 3));
+    ck_assert_int_eq(s21_strncmp("a", "", 2), strncmp("a", "", 2));
+    ck_assert_int_eq(s21_strncmp("", "a", 2), strncmp("", "a", 2));
+  }
+
+  // Special symbol
+  {
+    ck_assert_int_eq(s21_strncmp("\t\n", "\t\n", 3),
+                     strncmp("\t\n", "\t\n", 3));
+    ck_assert_int_eq(s21_strncmp("a\tb", "a\tc", 3),
+                     strncmp("a\tb", "a\tc", 3));
+    ck_assert_int_eq(s21_strncmp("test\n", "test\r", 5),
+                     strncmp("test\n", "test\r", 5));
+  }
+
+  // Digits
+  {
+    ck_assert_int_eq(s21_strncmp("123", "123", 3), strncmp("123", "123", 3));
+    ck_assert_int_eq(s21_strncmp("123", "124", 3), strncmp("123", "124", 3));
+    ck_assert_int_eq(s21_strncmp("test123", "test124", 7),
+                     strncmp("test123", "test124", 7));
+  }
+
+  // N len more than lines
+  {
+    ck_assert_int_eq(s21_strncmp("short", "short", 10),
+                     strncmp("short", "short", 10));
+    ck_assert_int_eq(s21_strncmp("a", "b", 10), strncmp("a", "b", 10));
+    ck_assert_int_eq(s21_strncmp("abc", "abd", 10), strncmp("abc", "abd", 10));
+  }
+
+  // Big N
+  {
+    ck_assert_int_eq(s21_strncmp("identical", "identical", 100),
+                     strncmp("identical", "identical", 100));
+  }
+
+  // Empty lines
+  {
+    ck_assert_int_eq(s21_strncmp("", "", 0), strncmp("", "", 0));
+    ck_assert_int_eq(s21_strncmp("", "", 1), strncmp("", "", 1));
+    ck_assert_int_eq(s21_strncmp("", "", 10), strncmp("", "", 10));
+  }
+}
+END_TEST
+
 int main() {
   Suite *s = suite_create("String test");
   TCase *tc = tcase_create("String test");
@@ -282,6 +473,8 @@ int main() {
   tcase_add_test(tc, test_strchr);
   tcase_add_test(tc, test_strrchr);
   tcase_add_test(tc, test_strncat);
+  tcase_add_test(tc, test_strstr);
+  tcase_add_test(tc, test_strncmp);
 
   suite_add_tcase(s, tc);
 
