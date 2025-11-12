@@ -2,6 +2,7 @@
 
 #include "s21_string.h"
 #include <string.h>
+#include <stdio.h>
 
 // Test string
 char hello_test[20] = "Hello world";
@@ -279,23 +280,23 @@ START_TEST(test_strstr) {
   // Base test
   {
     ck_assert_str_eq(s21_strstr("Hello World", "World"),
-                   strstr("Hello World", "World"));
+                     strstr("Hello World", "World"));
     ck_assert_str_eq(s21_strstr("Hello World", "Hello"),
-                   strstr("Hello World", "Hello"));
+                     strstr("Hello World", "Hello"));
     ck_assert_str_eq(s21_strstr("Hello World", "lo"),
-                   strstr("Hello World", "lo"));
+                     strstr("Hello World", "lo"));
     ck_assert_str_eq(s21_strstr("Hello World", "o W"),
-                   strstr("Hello World", "o W"));
+                     strstr("Hello World", "o W"));
   }
 
   // There isn't
   {
     ck_assert_ptr_eq(s21_strstr("Hello World", "XYZ"),
-                   strstr("Hello World", "XYZ"));
+                     strstr("Hello World", "XYZ"));
     ck_assert_ptr_eq(s21_strstr("Hello World", "world"),
-                   strstr("Hello World", "world"));
+                     strstr("Hello World", "world"));
     ck_assert_ptr_eq(s21_strstr("Hello", "Hello World"),
-                   strstr("Hello", "Hello World"));
+                     strstr("Hello", "Hello World"));
   }
 
   // Needle is empty
@@ -304,12 +305,12 @@ START_TEST(test_strstr) {
     ck_assert_ptr_eq(s21_strstr("", ""), strstr("", ""));
   }
 
-  // Haystack is empty 
+  // Haystack is empty
   {
     ck_assert_ptr_eq(s21_strstr("", "test"), strstr("", "test"));
     ck_assert_ptr_eq(s21_strstr("", "a"), strstr("", "a"));
   }
-  
+
   // Complete coincidence
   {
     ck_assert_str_eq(s21_strstr("test", "test"), strstr("test", "test"));
@@ -318,21 +319,21 @@ START_TEST(test_strstr) {
 
   // Multiple
   {
-    ck_assert_str_eq(s21_strstr("ababab", "ab"),
-                   strstr("ababab", "ab"));
+    ck_assert_str_eq(s21_strstr("ababab", "ab"), strstr("ababab", "ab"));
     ck_assert_str_eq(s21_strstr("Hello Wor World", "World"),
-                   strstr("Hello Wor World", "World"));
+                     strstr("Hello Wor World", "World"));
     ck_assert_str_eq(s21_strstr("mississippi", "iss"),
-                   strstr("mississippi", "iss"));
+                     strstr("mississippi", "iss"));
   }
 
   // Special symbol
   {
     ck_assert_str_eq(s21_strstr("Line1\nLine2", "Line2"),
-                   strstr("Line1\nLine2", "Line2"));
-    ck_assert_str_eq(s21_strstr("Tab\tText", "\tT"), strstr("Tab\tText", "\tT"));
+                     strstr("Line1\nLine2", "Line2"));
+    ck_assert_str_eq(s21_strstr("Tab\tText", "\tT"),
+                     strstr("Tab\tText", "\tT"));
     ck_assert_str_eq(s21_strstr("Test\r\nEnd", "\r\n"),
-                   strstr("Test\r\nEnd", "\r\n"));
+                     strstr("Test\r\nEnd", "\r\n"));
   }
 
   // Partial match
@@ -465,6 +466,177 @@ START_TEST(test_strncmp) {
 }
 END_TEST
 
+// Strtok test
+START_TEST(test_strtok) {
+  // Base test 
+  {
+    char str1_std[] = "Hello,World,Test";
+    char str1_s21[] = "Hello,World,Test";
+    
+    char *token_std = strtok(str1_std, ",");
+    char *token_s21 = s21_strtok(str1_s21, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+
+  // Multiple delim
+  {
+    char str_std[] = "  Hello, World!  ";
+    char str_s21[] = "  Hello, World!  ";
+    
+    char *token_std = strtok(str_std, " ,!");
+    char *token_s21 = s21_strtok(str_s21, " ,!");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, " ,!");
+    token_s21 = s21_strtok(NULL, " ,!");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, " ,!");
+    token_s21 = s21_strtok(NULL, " ,!");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+  
+  // Consecutive delim
+  {
+    char str_std[] = "Hello,,,World,,Test";
+    char str_s21[] = "Hello,,,World,,Test";
+    
+    char *token_std = strtok(str_std, ",");
+    char *token_s21 = s21_strtok(str_s21, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+  
+  // Only delim
+  {
+    char str1_std[] = ",,,,";
+    char str1_s21[] = ",,,,";
+    
+    char *token_std = strtok(str1_std, ",");
+    char *token_s21 = s21_strtok(str1_s21, ",");
+    ck_assert_ptr_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+
+  // Empty str
+  {
+    char str_std[] = "";
+    char str_s21[] = "";
+    
+    char *token_std = strtok(str_std, ",");
+    char *token_s21 = s21_strtok(str_s21, ",");
+    ck_assert_ptr_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+
+  // There isn't delim
+  {
+    char str_std[] = "HelloWorld";
+    char str_s21[] = "HelloWorld";
+    
+    char *token_std = strtok(str_std, ",");
+    char *token_s21 = s21_strtok(str_s21, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+  
+  // Special symbol
+  {
+    char str_std[] = "Line1\nLine2\tLine3\rLine4";
+    char str_s21[] = "Line1\nLine2\tLine3\rLine4";
+    
+    char *token_std = strtok(str_std, "\n\t\r");
+    char *token_s21 = s21_strtok(str_s21, "\n\t\r");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, "\n\t\r");
+    token_s21 = s21_strtok(NULL, "\n\t\r");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, "\n\t\r");
+    token_s21 = s21_strtok(NULL, "\n\t\r");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, "\n\t\r");
+    token_s21 = s21_strtok(NULL, "\n\t\r");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, "\n\t\r");
+    token_s21 = s21_strtok(NULL, "\n\t\r");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+  
+  // Delim at the end
+  {
+    char str_std[] = "Hello,World,";
+    char str_s21[] = "Hello,World,";
+    
+    char *token_std = strtok(str_std, ",");
+    char *token_s21 = s21_strtok(str_s21, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ",");
+    token_s21 = s21_strtok(NULL, ",");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+
+  // Change delim
+  {
+    char str_std[] = "Hello,World;Test";
+    char str_s21[] = "Hello,World;Test";
+    
+    char *token_std = strtok(str_std, ",");
+    char *token_s21 = s21_strtok(str_s21, ",");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ";");
+    token_s21 = s21_strtok(NULL, ";");
+    ck_assert_str_eq(token_s21, token_std);
+    
+    token_std = strtok(NULL, ";");
+    token_s21 = s21_strtok(NULL, ";");
+    ck_assert_ptr_eq(token_s21, token_std);
+  }
+
+}
+END_TEST
+
 int main() {
   Suite *s = suite_create("String test");
   TCase *tc = tcase_create("String test");
@@ -475,6 +647,7 @@ int main() {
   tcase_add_test(tc, test_strncat);
   tcase_add_test(tc, test_strstr);
   tcase_add_test(tc, test_strncmp);
+  tcase_add_test(tc, test_strtok);
 
   suite_add_tcase(s, tc);
 

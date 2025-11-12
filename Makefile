@@ -8,7 +8,7 @@ GCOV_FLAGS = -fprofile-arcs -ftest-coverage
 LCOV_FLAGS = --capture --directory
 
 #SRC_FILE = $(filter-out  test_%.c, $(wildcard *.c))
-SRC_FILE = s21_strlen.c s21_strchr.c s21_strrchr.c s21_strncat.c s21_strstr.c s21_strncmp.c
+SRC_FILE = s21_strlen.c s21_strchr.c s21_strrchr.c s21_strncat.c s21_strstr.c s21_strncmp.c s21_strtok.c
 OBJ_FILE = $(SRC_FILE:.c=.o)
 
 CLANG_FORMAT = clang-format
@@ -29,8 +29,8 @@ format:
 	$(CLANG_FORMAT) -n *.c *.h
 
 test: s21_string.a
-	$(CC) $(CFLAGS) $(CHECK_CFLAGS) $(GCOV_FLAGS) s21_string_test.c s21_string.a $(CHECK_LDFLAGS) $(TEST_FLAGS) -o test_exec
-	./test_exec
+	@$(CC) $(CFLAGS) $(CHECK_CFLAGS) $(GCOV_FLAGS) s21_string_test.c s21_string.a $(CHECK_LDFLAGS) $(TEST_FLAGS) -o test_exec
+	@./test_exec
 
 gcov_report:
 	@python3 -m gcovr --html-details coverage.html
