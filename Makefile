@@ -33,10 +33,9 @@ test: s21_string.a
 	./test_exec
 
 gcov_report:
-	@lcov $(LCOV_FLAGS) . --output-file coverage.info
-	@genhtml coverage.info --output-directory coverage_report
+	@python3 -m gcovr --html-details coverage.html
 
 clean:
-	@rm -rf *.o s21_string.a *.gcda *.gcno test.info coverage_report
+	@rm -rf *.o s21_string.a *.gcda *.gcno test.info coverage_report *.html *.css test_exec
 
 rebuild: clean all
