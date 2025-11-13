@@ -30,12 +30,12 @@ format:
 
 test: s21_string.a
 	@$(CC) $(CFLAGS) $(CHECK_CFLAGS) $(GCOV_FLAGS) s21_string_test.c s21_string.a $(CHECK_LDFLAGS) $(TEST_FLAGS) -o test_exec
-	@./test_exec
+	./test_exec
 
 gcov_report:
 	@python3 -m gcovr --html-details coverage.html
 
 clean:
-	@rm -rf *.o s21_string.a *.gcda *.gcno test.info coverage_report *.html *.css test_exec
+	@rm -rf *.o s21_string.a *.gcda *.gcno test.info coverage_report *.html *.css test_exec test_exec_debug.dSYM
 
 rebuild: clean all

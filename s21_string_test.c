@@ -502,7 +502,7 @@ START_TEST(test_strtok) {
     token_std = strtok(NULL, " ,!");
     token_s21 = s21_strtok(NULL, " ,!");
     ck_assert_str_eq(token_s21, token_std);
-    
+
     token_std = strtok(NULL, " ,!");
     token_s21 = s21_strtok(NULL, " ,!");
     ck_assert_ptr_eq(token_s21, token_std);
@@ -631,7 +631,7 @@ START_TEST(test_strtok) {
     
     token_std = strtok(NULL, ";");
     token_s21 = s21_strtok(NULL, ";");
-    ck_assert_ptr_eq(token_s21, token_std);
+    ck_assert_str_eq(token_s21, token_std);
   }
 
 }
