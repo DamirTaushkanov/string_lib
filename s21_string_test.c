@@ -637,6 +637,114 @@ START_TEST(test_strtok) {
 }
 END_TEST
 
+START_TEST(test_strncpy) {
+  // Base test
+  {
+    char dest_std[10] = "XXXXXXXXX";
+    char dest_s21[10] = "XXXXXXXXX";
+    strncpy(dest_std, "Hello", 6);
+    s21_strncpy(dest_s21, "Hello", 6);
+    ck_assert_str_eq(dest_s21, dest_std);
+  }
+
+  // Replace
+  {
+    char dest_std[10] = "abcdefgh";
+    char dest_s21[10] = "abcdefgh";
+    strncpy(dest_std, "123", 3);
+    s21_strncpy(dest_s21, "123", 3);
+    ck_assert_str_eq(dest_s21, dest_std);
+  }
+
+  // N is more then src
+  {
+    char dest_std[10] = "XXXXXXXXX";
+    char dest_s21[10] = "XXXXXXXXX";
+    strncpy(dest_std, "Hi", 5);
+    s21_strncpy(dest_s21, "Hi", 5);
+    ck_assert_str_eq(dest_s21, dest_std);
+  }
+
+  // N == 0
+  {
+    char dest_std[10] = "test";
+    char dest_s21[10] = "test";
+    strncpy(dest_std, "new", 0);
+    s21_strncpy(dest_s21, "new", 0);
+    ck_assert_str_eq(dest_s21, dest_std);
+  }
+
+  // Empty src
+  {
+    char dest_std[10] = "XXXXXXXXX";
+    char dest_s21[10] = "XXXXXXXXX";
+    strncpy(dest_std, "", 3);
+    s21_strncpy(dest_s21, "", 3);
+    ck_assert_str_eq(dest_s21, dest_std);
+  }
+
+  // 6. Copy exactly n characters without null terminator
+  {
+    char dest_std[10] = "abcdefgh";
+    char dest_s21[10] = "abcdefgh";
+    strncpy(dest_std, "12345", 5);
+    s21_strncpy(dest_s21, "12345", 5);
+    for (int i = 0; i < 5; i++) {
+      ck_assert_int_eq(dest_s21[i], dest_std[i]);
+    }
+    ck_assert_int_eq(dest_s21[5], 'f'); // No null terminator added
+  }
+
+  // 7. Single character copy
+  {
+    char dest_std[10] = "Hello";
+    char dest_s21[10] = "Hello";
+    strncpy(dest_std, "X", 1);
+    s21_strncpy(dest_s21, "X", 1);
+    ck_assert_str_eq(dest_s21, dest_std);
+  }
+
+  // 8. n = 1 with empty string
+  {
+    char dest_std[10] = "test";
+    char dest_s21[10] = "test";
+    strncpy(dest_std, "", 1);
+    s21_strncpy(dest_s21, "", 1);
+    ck_assert_int_eq(dest_s21[0], dest_std[0]);
+    ck_assert_int_eq(dest_s21[1], 'e'); // Rest unchanged
+  }
+
+  // 9. Maximum n copy
+  {
+    char dest_std[5];
+    char dest_s21[5];
+    memset(dest_std, 'X', 5);
+    memset(dest_s21, 'X', 5);
+    strncpy(dest_std, "1234", 4);
+    s21_strncpy(dest_s21, "1234", 4);
+    for (int i = 0; i < 4; i++) {
+      ck_assert_int_eq(dest_s21[i], dest_std[i]);
+    }
+    ck_assert_int_eq(dest_s21[4], 'X'); // Last position unchanged
+  }
+
+  // 10. Overwrite middle of string
+  {
+    char dest_std[10] = "abcdefgh";
+    char dest_s21[10] = "abcdefgh";
+    strncpy(dest_std + 2, "XY", 2);
+    s21_strncpy(dest_s21 + 2, "XY", 2);
+    ck_assert_str_eq(dest_s21, dest_std);
+    ck_assert_int_eq(dest_s21[0], 'a');
+    ck_assert_int_eq(dest_s21[1], 'b');
+    ck_assert_int_eq(dest_s21[2], 'X');
+    ck_assert_int_eq(dest_s21[3], 'Y');
+    ck_assert_int_eq(dest_s21[4], 'e');
+  }
+}
+END_TEST
+
+
 int main() {
   Suite *s = suite_create("String test");
   TCase *tc = tcase_create("String test");
